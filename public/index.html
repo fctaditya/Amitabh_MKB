@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <title>Mosquito</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="stage">
+    <canvas id="game"></canvas>
+
+    <div id="hud">
+      <div id="hits">0 / 5</div>
+      <div id="time">0:45</div>
+      <div id="role"></div>
+    </div>
+    <button id="pauseBtn" class="icon-btn" title="Pause">II</button>
+    <button id="themeBtn" class="icon-btn" title="Toggle dark mode">🌙</button>
+
+    <section id="menu" class="screen">
+      <h1>Mosquito</h1>
+      <p>Hit the mosquito before time runs out, or survive as the mosquito.</p>
+      <input id="nameInput" maxlength="12" placeholder="Your name" autocomplete="off">
+      <button class="btn" id="singleBtn">Single player</button>
+      <button class="btn" id="multiBtn">Multiplayer</button>
+    </section>
+
+    <section id="singleRole" class="screen">
+      <h2>Single player</h2>
+      <p>Pick your side. The computer plays the other one.</p>
+      <button class="btn" data-single="person">Play as Person</button>
+      <button class="btn" data-single="mosquito">Play as Mosquito</button>
+      <button class="btn alt" data-back>Back</button>
+    </section>
+
+    <section id="multi" class="screen">
+      <h2>Multiplayer</h2>
+      <p>Many people, many mosquitoes. Create a room and share the code, or join a friend's room.</p>
+      <button class="btn" id="createBtn">Create room</button>
+      <div class="row">
+        <input id="codeInput" maxlength="4" placeholder="CODE" autocomplete="off">
+        <button class="btn small" id="joinBtn">Join</button>
+      </div>
+      <button class="btn alt" data-back>Back</button>
+    </section>
+
+    <section id="lobby" class="screen">
+      <h2>Room</h2>
+      <div class="room-code" id="roomCode">----</div>
+      <p id="lobbyInfo"></p>
+      <ul id="playerList"></ul>
+      <div class="row">
+        <button class="btn small alt" data-role="person">Person</button>
+        <button class="btn small alt" data-role="mosquito">Mosquito</button>
+      </div>
+      <button class="btn" id="startBtn">Start game</button>
+      <button class="btn alt" id="leaveBtn">Leave</button>
+    </section>
+
+    <section id="over" class="screen">
+      <h2 id="overTitle"></h2>
+      <p id="overText"></p>
+      <button class="btn" id="againBtn">Play again</button>
+      <button class="btn alt" id="menuBtn">Menu</button>
+    </section>
+
+    <section id="paused" class="screen"><h2>Paused</h2><p>Click to resume</p></section>
+    <div id="toast"></div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
