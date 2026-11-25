@@ -1,6 +1,6 @@
 // DOM access in one place: screens, HUD, lobby list, toast.
 const $ = id => document.getElementById(id);
-const SCREENS = ['menu', 'singleRole', 'multi', 'lobby', 'over', 'paused'];
+const SCREENS = ['menu', 'singleRole', 'singleDiff', 'multi', 'lobby', 'over', 'paused'];
 
 export const ui = {
   $,

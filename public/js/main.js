@@ -26,6 +26,7 @@ let lanUrls = [];
 let lastShotId = 0;
 let overShown = false;
 let overTimer = null;
+let pendingRole = null;     // role chosen before difficulty screen
 
 // ---------- player name ----------
 function playerName() {
@@ -68,7 +69,7 @@ function setPaused(paused) {
   ui.setPaused(paused);
 }
 
-function startSingle(role) { enterGame(new LocalSession(role, playerName() || 'You')); }
+function startSingle(role, difficulty = 'medium') { enterGame(new LocalSession(role, playerName() || 'You', difficulty)); }
 
 // ---------- reacting to a snapshot ----------
 function handleSnapshot(snap) {
@@ -149,7 +150,13 @@ function leaveRoom() {
 ui.$('singleBtn').onclick = () => ui.show('singleRole');
 ui.$('multiBtn').onclick = () => ui.show('multi');
 document.querySelectorAll('[data-back]').forEach(b => { b.onclick = () => ui.show('menu'); });
-document.querySelectorAll('[data-single]').forEach(b => { b.onclick = () => startSingle(b.dataset.single); });
+document.querySelectorAll('[data-back-diff]').forEach(b => { b.onclick = () => ui.show('singleRole'); });
+document.querySelectorAll('[data-single]').forEach(b => {
+  b.onclick = () => { pendingRole = b.dataset.single; ui.show('singleDiff'); };
+});
+document.querySelectorAll('[data-diff]').forEach(b => {
+  b.onclick = () => startSingle(pendingRole, b.dataset.diff);
+});
 document.querySelectorAll('[data-role]').forEach(b => { b.onclick = () => network.send({ t: 'role', role: b.dataset.role }); });
 
 ui.$('createBtn').onclick = () => {
@@ -165,7 +172,7 @@ ui.$('leaveBtn').onclick = () => { leaveRoom(); ui.show('multi'); };
 
 ui.$('againBtn').onclick = () => {
   if (!session) return;
-  if (session.mode === 'local') return startSingle(session.role);
+  if (session.mode === 'local') return startSingle(session.role, session.difficulty);
   network.send({ t: 'again' });
   ui.setAgain('Waiting for others…', true);
 };

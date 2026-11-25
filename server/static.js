@@ -15,6 +15,7 @@ const TYPES = {
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
   '.mp3': 'audio/mpeg',
+  '.mp4': 'video/mp4',
   '.ogg': 'audio/ogg',
   '.wav': 'audio/wav',
 };

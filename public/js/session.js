@@ -2,16 +2,18 @@
 //   mode, role, myId, snapshot, paused, update(dt, input)
 import { Game } from './shared/game.js';
 import { MosquitoAI, PersonAI } from './shared/ai.js';
-import { ROLES } from './shared/config.js';
+import { ROLES, DIFFICULTIES } from './shared/config.js';
 
 const SEND_INTERVAL = 1 / 30;
 
 /** Single player: the browser runs the game, the computer plays the other side. */
 export class LocalSession {
-  constructor(role, name) {
+  constructor(role, name, difficulty = 'medium') {
     const human = role === ROLES.PERSON;
+    const diff = DIFFICULTIES[difficulty] || DIFFICULTIES.medium;
     this.mode = 'local';
     this.role = role;
+    this.difficulty = difficulty;
     this.myId = 'me';
     this.names = new Map([['me', name], ['cpu', 'Computer']]);
     this.paused = false;
@@ -19,7 +21,7 @@ export class LocalSession {
       persons: [human ? 'me' : 'cpu'],
       mosquitos: [human ? 'cpu' : 'me'],
     });
-    this.ai = human ? new MosquitoAI('cpu') : new PersonAI('cpu');
+    this.ai = human ? new MosquitoAI('cpu', diff) : new PersonAI('cpu', diff);
     this.snapshot = this.game.snapshot();
   }
 

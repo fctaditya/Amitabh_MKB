@@ -15,9 +15,11 @@ class DelayedView {
 
 /** Computer as the mosquito: flies randomly, dodging the (slightly delayed) laser lines. */
 export class MosquitoAI {
-  constructor(id) {
+  /** cfg: optional difficulty overrides (from DIFFICULTIES preset) */
+  constructor(id, cfg = {}) {
     this.id = id;
-    this.view = new DelayedView(C.AI_MOSQ_REACT);
+    this.c = { ...C, ...cfg };
+    this.view = new DelayedView(this.c.AI_MOSQ_REACT);
     this.wander = { x: W / 2, y: H * 0.3, timer: 0 };
   }
 
@@ -31,8 +33,8 @@ export class MosquitoAI {
     // random wandering target
     const w = this.wander;
     w.timer -= dt;
-    if (w.timer <= 0 || Math.hypot(w.x - me.x, w.y - me.y) < 30) {
-      w.x = randRange(b.minX + 40, b.maxX - 40);
+    if (w.timer <= 0 || Math.hypot(w.x - me.x, w.y - me.y) < 18) {
+      w.x = randRange(b.minX + 25, b.maxX - 25);
       w.y = randRange(b.minY + 20, b.maxY - 20);
       w.timer = randRange(0.6, 1.4);
     }
@@ -45,29 +47,31 @@ export class MosquitoAI {
       const s = segDist(me.x, me.y, ORIGIN.x, ORIGIN.y, a.x, a.y);
       if (!danger || s.d < danger.d) danger = { ...s, a };
     }
-    if (danger && danger.d < C.AI_MOSQ_DANGER) {
+    if (danger && danger.d < this.c.AI_MOSQ_DANGER) {
       let ax = me.x - danger.cx, ay = me.y - danger.cy, l = Math.hypot(ax, ay);
       if (l < 1) { ax = -(danger.a.y - ORIGIN.y); ay = danger.a.x - ORIGIN.x; l = Math.hypot(ax, ay) || 1; }
-      const urge = 1 - danger.d / C.AI_MOSQ_DANGER;
+      const urge = 1 - danger.d / this.c.AI_MOSQ_DANGER;
       dx = dx * (1 - urge) + (ax / l) * urge * 1.4;
       dy = dy * (1 - urge) + (ay / l) * urge * 1.4;
     }
 
     // stay off the walls
-    dx += (me.x < 90 ? 1 : 0) - (me.x > W - 90 ? 1 : 0);
+    dx += (me.x < 55 ? 1 : 0) - (me.x > W - 55 ? 1 : 0);
     dy += (me.y < b.minY + 40 ? 1 : 0) - (me.y > b.maxY - 40 ? 1 : 0);
 
     const len = Math.hypot(dx, dy);
     if (len > 1) { dx /= len; dy /= len; }
-    return [dx * C.AI_MOSQ_SPEED, dy * C.AI_MOSQ_SPEED];
+    return [dx * this.c.AI_MOSQ_SPEED, dy * this.c.AI_MOSQ_SPEED];
   }
 }
 
 /** Computer as the person: tracks the nearest mosquito with a wobbly aim and fires when on target. */
 export class PersonAI {
-  constructor(id) {
+  /** cfg: optional difficulty overrides (from DIFFICULTIES preset) */
+  constructor(id, cfg = {}) {
     this.id = id;
-    this.view = new DelayedView(C.AI_AIM_LAG);
+    this.c = { ...C, ...cfg };
+    this.view = new DelayedView(this.c.AI_AIM_LAG);
     this.ax = W / 2; this.ay = H * 0.4;
     this.fs = 0;
     this.offset = { x: 0, y: 0 };
@@ -91,11 +95,11 @@ export class PersonAI {
     this.offsetTimer -= dt;
     if (this.offsetTimer <= 0) {               // re-roll aim inaccuracy now and then
       this.offsetTimer = randRange(0.5, 1);
-      const r = C.AI_AIM_WOBBLE * randRange(0.4, 1), a = Math.random() * Math.PI * 2;
+      const r = this.c.AI_AIM_WOBBLE * randRange(0.4, 1), a = Math.random() * Math.PI * 2;
       this.offset = { x: Math.cos(a) * r, y: Math.sin(a) * r };
     }
     const dx = target.x + this.offset.x - this.ax, dy = target.y + this.offset.y - this.ay;
-    const dist = Math.hypot(dx, dy), step = Math.min(dist, C.AI_AIM_SPEED * dt);
+    const dist = Math.hypot(dx, dy), step = Math.min(dist, this.c.AI_AIM_SPEED * dt);
     if (dist > 0) { this.ax += (dx / dist) * step; this.ay += (dy / dist) * step; }
     this.ax = clamp(this.ax, 0, W);
     this.ay = clamp(this.ay, 0, H);

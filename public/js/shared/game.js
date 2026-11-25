@@ -88,7 +88,7 @@ export class Game {
     m.vy += (my * C.MOSQ_SPEED - m.vy) * k;
     m.x = clamp(m.x + m.vx * dt, b.minX, b.maxX);
     m.y = clamp(m.y + m.vy * dt, b.minY, b.maxY);
-    if (Math.hypot(m.vx, m.vy) > 20) m.ang = Math.atan2(m.vy, m.vx);
+    if (Math.hypot(m.vx, m.vy) > 12) m.ang = Math.atan2(m.vy, m.vx);
   }
 
   fire(personId) {
@@ -118,7 +118,7 @@ export class Game {
     const aims = [...this.persons.values()].map(p => p.aim);
     let best = null, bestDist = -1;
     for (let i = 0; i < 8; i++) {
-      const x = randRange(60, W - 60), y = randRange(90, 90 + H * 0.3);
+      const x = randRange(36, W - 36), y = randRange(90, 90 + H * 0.3);
       const d = Math.min(...aims.map(a => Math.hypot(x - a.x, y - a.y)));
       if (d > bestDist) { bestDist = d; best = { x, y }; }
     }

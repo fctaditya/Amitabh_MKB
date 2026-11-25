@@ -110,8 +110,13 @@ export class Renderer {
 
   drawBed() {
     const { ctx } = this;
+    const xs = W / 700;   // keep bed artwork at original proportions regardless of world width
     ctx.save();
     ctx.translate(W / 2, H * 0.8);
+
+    // Draw bed body with x-scale applied
+    ctx.save();
+    ctx.scale(xs, 1);
     ctx.lineWidth = 3; ctx.strokeStyle = this.theme.line; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
 
     ctx.beginPath();
@@ -129,8 +134,10 @@ export class Renderer {
     ctx.beginPath(); ctx.moveTo(-100, 42); ctx.lineTo(-100, 60); ctx.moveTo(100, 30); ctx.lineTo(100, 50); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(-60, -8); ctx.lineTo(60, -14); ctx.moveTo(-20, -12); ctx.lineTo(-10, -2); ctx.stroke();
     ctx.fillStyle = this.theme.pillow; ctx.beginPath(); ctx.ellipse(-82, -16, 22, 14, -0.2, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.restore();  // undo x-scale
 
-    this.drawHead(-82, -30, 20);
+    // Draw head as a true circle at the scaled x position
+    this.drawHead(-82 * xs, -30, 20);
     ctx.restore();
   }
 
@@ -238,7 +245,7 @@ export class Renderer {
     ctx.fillStyle = this.theme.text; ctx.textAlign = 'center';
     ctx.font = '700 26px system-ui'; ctx.fillText(title, W / 2, top + 50);
     ctx.font = '15px system-ui';
-    this.wrapText(hint, W / 2, top + 82, 420, 22);
+    this.wrapText(hint, W / 2, top + 82, W - 20, 22);
     ctx.font = '700 80px system-ui'; ctx.fillText(snap.c, W / 2, top + 225);
   }
 
@@ -254,7 +261,8 @@ export class Renderer {
 }
 
 export function hintText(role) {
+  const touch = navigator.maxTouchPoints > 0;
   return role === 'person'
-    ? ['You are the PERSON', `Move to aim, click to fire. Hit the mosquito ${CONFIG.WIN_HITS} times in ${CONFIG.ROUND_TIME}s.`]
-    : ['You are the MOSQUITO', `WASD / arrows (or hold & drag) to fly. Stay away from the dotted line for ${CONFIG.ROUND_TIME}s.`];
+    ? ['You are the PERSON', `${touch ? 'Tap' : 'Move to aim, click'} to fire. Hit the mosquito ${CONFIG.WIN_HITS} times in ${CONFIG.ROUND_TIME}s.`]
+    : ['You are the MOSQUITO', `${touch ? 'Hold & drag' : 'WASD / arrows (or hold & drag)'} to fly. Survive for ${CONFIG.ROUND_TIME}s.`];
 }
